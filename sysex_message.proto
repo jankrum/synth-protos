@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package sysex_message;
 
+option go_package = ".";
+
 // Enum to define the stages of a 3-way handshake
 enum HandshakeStage {
     SYN = 0;
