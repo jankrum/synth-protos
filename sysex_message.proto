@@ -2,55 +2,55 @@ syntax = "proto3";
 
 package sysex_message;
 
-option go_package = ".";
-
-// Enum to define the stages of a 3-way handshake
-enum HandshakeStage {
-    SYN = 0;
-    SYNACK = 1;
-    ACK = 2;
-}
-
-// Message for handshake protocol
-message HandshakeMessage {
-    HandshakeStage stage = 1;
-}
+option go_package = "./sysex_message";
 
 // Main message that encapsulates different types of messages
 message SysexMessage {
+    // Enum to define the stages of a 3-way handshake
+    enum HandshakeStage {
+        SYN = 0;
+        SYNACK = 1;
+        ACK = 2;
+    }
+
+    // Message for handshake protocol
+    message HandshakeMessage {
+        HandshakeStage stage = 1;
+    }
+
+    // Enum to distinguish types of control requests
+    enum ControlType {
+        OPTIONS = 0;
+        RANGE = 1;
+    }
+
+    // Options control type which contains multiple strings
+    message OptionsControl {
+        repeated string options = 1;
+    }
+
+    // Range control type which contains a min and max int32 value
+    message RangeControl {
+        int32 min = 1;
+        int32 max = 2;
+    }
+
+    // Control request message
+    message ControlRequest {
+        int32 address = 1;
+        string prefix = 2;
+        string suffix = 3;
+        ControlType control_type = 4;
+
+        // The control-specific portion of the message
+        oneof control_specific {
+            OptionsControl options_control = 5;
+            RangeControl range_control = 6;
+        }
+    }
+
     oneof message_type {
         HandshakeMessage handshake = 1;
         ControlRequest control_request = 2;
     }
-}
-
-// Enum to distinguish types of control requests
-enum ControlType {
-    OPTIONS = 0;
-    RANGE = 1;
-}
-
-// Control request message
-message ControlRequest {
-    int32 address = 1;
-    string prefix = 2;
-    string suffix = 3;
-    ControlType control_type = 4;
-
-    // The control-specific portion of the message
-    oneof control_specific {
-        OptionsControl options_control = 5;
-        RangeControl range_control = 6;
-    }
-}
-
-// Options control type which contains multiple strings
-message OptionsControl {
-    repeated string options = 1;
-}
-
-// Range control type which contains a min and max int32 value
-message RangeControl {
-    int32 min = 1;
-    int32 max = 2;
 }
